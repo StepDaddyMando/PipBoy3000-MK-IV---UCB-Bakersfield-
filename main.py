@@ -1,21 +1,17 @@
 import pygame
-from sys import exit
 
 
 pygame.init()
 screen = pygame.display.set_mode((640,480))
 clock = pygame.time.Clock()
+running = True
 
-
-while True:
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
+            running = False
+        
+    pygame.display.update()
+    clock.tick(60)
 
-
-        #game code
-
-
-        pygame.display.update()
-        clock.tick(60)
+pygame.quit()
