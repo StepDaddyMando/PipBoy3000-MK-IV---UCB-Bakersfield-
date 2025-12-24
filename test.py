@@ -5,12 +5,12 @@ class PipBoy:
         pygame.init()
         self.width = width
         self.height = height
+        self.font= pygame.font.Font("monofonto.ttf", 12) 
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.rate = rate
         self.clock = pygame.time.Clock()
         self.run_loop()
         
-
     def run_loop(self):
         running = True
         while running:
@@ -24,13 +24,8 @@ class PipBoy:
 
         pygame.quit()
 
-
-
     def display_update(self):
         pygame.display.flip()
     
-    
-
-
 boi= PipBoy()
 
