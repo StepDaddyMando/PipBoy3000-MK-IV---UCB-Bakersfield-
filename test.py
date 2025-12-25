@@ -29,5 +29,5 @@ class PipBoy:
     def display_update(self):
         pygame.display.flip()
     
-boi= PipBoy()
+boi = PipBoy()
 
