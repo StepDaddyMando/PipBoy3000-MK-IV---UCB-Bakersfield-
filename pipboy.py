@@ -11,6 +11,13 @@ class PipBoy:
         self.clock = pygame.time.Clock()
         self.run_loop() #Initializes the main loop of the PipBoy
 
+    def event_handler(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+
     def bootup_sequence(self):
         self.screen.fill('black')
 
@@ -28,14 +35,16 @@ class PipBoy:
         
         for i, line in enumerate(boot_text):
             pos = 0
-            for j in line:
-                char_text = self.font.render(j, True, (2, 255, 2))
+            for char in line:
+                self.event_handler()
+                char_text = self.font.render(char, True, (2, 255, 2))
                 char_x = 15 + pos
-                char_y = 10 + i * (pygame.font.Font.size(self.font, "A")[1] + 4)
+                char_y = 10 + i * (pygame.font.Font.size(self.font, char)[1] + 4)
                 self.screen.blit(char_text, (char_x, char_y))
                 pygame.display.flip()
                 pygame.time.delay(40)
-                pos += pygame.font.Font.size(self.font, j)[0]
+                pos += pygame.font.Font.size(self.font, char)[0]
+                self.clock.tick(self.framerate)
     
 
     #Main loop of the PipBoy    
