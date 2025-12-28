@@ -1,21 +1,51 @@
 import pygame
+import menus
 pygame.init()
 
 class PipBoy:
-    def __init__(self, width=800, height=480, framerate=60):
+    def __init__(self, width=800, height=480, framerate=60, menu_tabs=[menus.Status_Tab(), menus.Inventory_Tab(), menus.Data_Tab(), menus.Map_Tab(), menus.Radio_Tab()]):
         self.width = width
         self.height = height
         self.font= pygame.font.Font("monofonto.ttf", 18) 
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.framerate = framerate
         self.clock = pygame.time.Clock()
+        self.tabs = menu_tabs
+        self.menu_index = 0  #Tracks which menu is currently active
+        self.submenu_index = 0  #Tracks which submenu is currently active
         self.run_loop() #Initializes the main loop of the PipBoy
+
 
     def event_handler(self):
         for event in pygame.event.get():
+            # Handle quitting the application
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            
+            # Handle key presses for menu navigation     
+            if event.type == pygame.KEYDOWN:
+                # Left and Right arrow keys are used to switch between main menu tabs
+                if event.key == pygame.K_LEFT:
+                    if self.menu_index > 0:
+                        self.menu_index -= 1
+                        self.submenu_index = 0
+
+                elif event.key == pygame.K_RIGHT:
+                    if self.menu_index < len(self.tabs) - 1:
+                        self.menu_index += 1
+                        self.submenu_index = 0
+
+                # Up and Down arrow keys are used to navigate the submenus within the current tab
+                elif event.key == pygame.K_UP:
+                    if self.submenu_index > 0:
+                        self.submenu_index -= 1
+
+                elif event.key == pygame.K_DOWN:
+                    if self.submenu_index < len(self.tabs[self.menu_index].subtabs()) - 1:
+                        self.submenu_index += 1
+
+
 
 
     def bootup_sequence(self):
@@ -59,10 +89,7 @@ class PipBoy:
             self.screen.fill('black')
 
         while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-
+            self.event_handler()
             self.display_update()  
             self.clock.tick(self.framerate)
     
