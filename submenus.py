@@ -69,12 +69,12 @@ class StatusMenu(SubMenu):
 
 
 class SpecialMenu(SubMenu):
-    def __init__(self, name="SPECIAL", submenu_index=1):
+    def __init__(self, name="SPECIAL", submenu_index=0):
         super().__init__(name, submenu_index)
 
 
 class PerksMenu(SubMenu):
-    def __init__(self, name="PERKS", submenu_index=2):
+    def __init__(self, name="PERKS", submenu_index=0):
         super().__init__(name, submenu_index)
 
 
@@ -84,22 +84,22 @@ class ItemsMenu(SubMenu):
 
 
 class WeaponsMenu(SubMenu):
-    def __init__(self, name="WEAPONS", submenu_index=1):
+    def __init__(self, name="WEAPONS", submenu_index=0):
         super().__init__(name, submenu_index)
 
 
 class ApparelMenu(SubMenu):
-    def __init__(self, name="APPAREL", submenu_index=2):
+    def __init__(self, name="APPAREL", submenu_index=0):
         super().__init__(name, submenu_index)
 
 
 class AidMenu(SubMenu):
-    def __init__(self, name="AID", submenu_index=3):
+    def __init__(self, name="AID", submenu_index=0):
         super().__init__(name, submenu_index)
 
 
 class MiscMenu(SubMenu):
-    def __init__(self, name="MISC", submenu_index=4):
+    def __init__(self, name="MISC", submenu_index=0):
         super().__init__(name, submenu_index)
 
 
@@ -109,7 +109,7 @@ class QuestsMenu(SubMenu):
 
 
 class NotesMenu(SubMenu):
-    def __init__(self, name="NOTES", submenu_index=1):
+    def __init__(self, name="NOTES", submenu_index=0):
         super().__init__(name, submenu_index)
 
 
@@ -119,7 +119,7 @@ class WorldMapMenu(SubMenu):
 
 
 class LocalMapMenu(SubMenu):
-    def __init__(self, name="LOCAL MAP", submenu_index=1):
+    def __init__(self, name="LOCAL MAP", submenu_index=0):
         super().__init__(name, submenu_index)
 
 
@@ -129,5 +129,5 @@ class StationsMenu(SubMenu):
 
 
 class TuningMenu(SubMenu):
-    def __init__(self, name="Tuning", submenu_index=1):
+    def __init__(self, name="Tuning", submenu_index=0):
         super().__init__(name, submenu_index)
