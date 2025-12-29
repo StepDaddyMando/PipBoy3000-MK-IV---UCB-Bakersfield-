@@ -1,15 +1,20 @@
 import pygame
+import submenus
 
 
 class MenuTab:
-    def __init__(self, name, font="monofonto.ttf"):
+    def __init__(self, name):
         self.name = name
+        self.tabs_list = None
 
     def display_tab(self):
         return self.name
 
     def subtabs(self):
-        raise NotImplementedError
+        return self.tabs_list
+
+    def subtab_names(self):
+        return [name.display_name() for name in self.subtabs()]
 
     def display_subtabs(self, index):
         return self.subtabs()[index]
@@ -22,12 +27,12 @@ class MenuTab:
         submenu_tab_x_pos = 20
         y_pos = 10
         menu_tab_names = [i.display_tab() for i in tabs]
-        submenu_tab_names = self.subtabs()
+        submenu_tab_names = self.subtab_names()
         amount_of_tabs = len(menu_tab_names)
         amount_of_subtabs = len(submenu_tab_names)
         menu_tab_length = 760 // amount_of_tabs
         submenu_tab_length = 760 // amount_of_subtabs
-        
+
         # Draws the menu tabs at the top of the screen
         for i, name in enumerate(menu_tab_names):
             size = pygame.font.Font.size(menu_font, name)[0]
@@ -59,43 +64,45 @@ class MenuTab:
                 text = submenu_font.render(name, True, color)
                 screen.blit(text, (center, y_pos))
             submenu_tab_x_pos += submenu_tab_length
+        y_pos += submenu_font.get_linesize()
+        self.subtabs()[submenu_index].draw_submenu(screen, y_pos, color)
 
 
 class StatusTab(MenuTab):
     def __init__(self):
         super().__init__("STAT")
-
-    def subtabs(self):
-        return ["STATUS", "SPECIAL", "PERKS"]
+        self.tabs_list = [
+            submenus.StatusMenu(),
+            submenus.SpecialMenu(),
+            submenus.PerksMenu(),
+        ]
 
 
 class InventoryTab(MenuTab):
     def __init__(self):
         super().__init__("INV")
-
-    def subtabs(self):
-        return ["ITEMS", "WEAPONS", "APPAREL", "AID", "MISC"]
+        self.tabs_list = [
+            submenus.ItemsMenu(),
+            submenus.WeaponsMenu(),
+            submenus.ApparelMenu(),
+            submenus.AidMenu(),
+            submenus.MiscMenu(),
+        ]
 
 
 class DataTab(MenuTab):
     def __init__(self):
         super().__init__("DATA")
-
-    def subtabs(self):
-        return ["QUESTS", "MAP", "LOG"]
+        self.tabs_list = [submenus.QuestsMenu(), submenus.NotesMenu()]
 
 
 class MapTab(MenuTab):
     def __init__(self):
         super().__init__("MAP")
-
-    def subtabs(self):
-        return ["WORLD MAP", "LOCAL MAP"]
+        self.tabs_list = [submenus.WorldMapMenu(), submenus.LocalMapMenu()]
 
 
 class RadioTab(MenuTab):
     def __init__(self):
         super().__init__("RADIO")
-
-    def subtabs(self):
-        return ["STATIONS"]
+        self.tabs_list = [submenus.StationsMenu(), submenus.TuningMenu()]
