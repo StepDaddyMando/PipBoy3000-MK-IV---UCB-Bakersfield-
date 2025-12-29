@@ -3,10 +3,13 @@ import menus
 pygame.init()
 
 class PipBoy:
-    def __init__(self, width=800, height=480, framerate=60, menu_tabs=[menus.Status_Tab(), menus.Inventory_Tab(), menus.Data_Tab(), menus.Map_Tab(), menus.Radio_Tab()]):
+    def __init__(self, width=800, height=480, framerate=60, menu_tabs=[menus.StatusTab(), menus.InventoryTab(), menus.DataTab(), menus.MapTab(), menus.RadioTab()]):
         self.width = width
         self.height = height
-        self.font= pygame.font.Font("monofonto.ttf", 18) 
+        self.font_18= pygame.font.Font("monofonto.ttf", 18)
+        self.font_24= pygame.font.Font("monofonto.ttf", 24)
+        self.font_36= pygame.font.Font("monofonto.ttf", 36)
+        self.green_text = (2, 255, 2)
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.framerate = framerate
         self.clock = pygame.time.Clock()
@@ -67,13 +70,13 @@ class PipBoy:
             pos = 0
             for char in line:
                 self.event_handler()
-                char_text = self.font.render(char, True, (2, 255, 2))
+                char_text = self.font_18.render(char, True, self.green_text)
                 char_x = 15 + pos
-                char_y = 10 + i * (pygame.font.Font.size(self.font, char)[1] + 4)
+                char_y = 10 + i * (pygame.font.Font.size(self.font_18, char)[1] + 4)
                 self.screen.blit(char_text, (char_x, char_y))
                 pygame.display.flip()
                 pygame.time.delay(40)
-                pos += pygame.font.Font.size(self.font, char)[0]
+                pos += pygame.font.Font.size(self.font_18, char)[0]
                 self.clock.tick(self.framerate)
     
 
@@ -90,6 +93,7 @@ class PipBoy:
 
         while running:
             self.event_handler()
+            self.tabs[self.menu_index].draw_menu(self.screen, self.tabs, self.menu_index, self.submenu_index, self.green_text, self.font_36, self.font_24)
             self.display_update()  
             self.clock.tick(self.framerate)
     
