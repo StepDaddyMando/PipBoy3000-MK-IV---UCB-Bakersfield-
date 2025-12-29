@@ -25,7 +25,7 @@ class MenuTab:
     def draw_menu(
         self, screen, tabs, menu_index, submenu_index, color, menu_font, submenu_font
     ):
-        screen.fill("black")
+        screen.fill((0, 6, 0))
         menu_tab_x_pos = 20
         submenu_tab_x_pos = 20
         y_pos = 10

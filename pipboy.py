@@ -23,6 +23,10 @@ class PipBoy:
         self.font_36 = pygame.font.Font("monofonto.ttf", 36)
         self.green_text = (2, 255, 2)
         self.screen = pygame.display.set_mode((self.width, self.height))
+        self.scanline_surface = pygame.Surface(
+            (self.width, self.height), pygame.SRCALPHA
+        )
+        self.create_scanlines()
         self.framerate = framerate
         self.clock = pygame.time.Clock()
         self.tabs = menu_tabs
@@ -60,12 +64,24 @@ class PipBoy:
                         < len(self.tabs[self.menu_index].subtabs()) - 1
                     ):
                         self.submenu_index += 1
-                
-                elif event.key == pygame.K_KP_ENTER:
-                    self.tabs[self.submenu_index].update_selected_submenu()
+
+                elif event.key == pygame.K_RETURN:
+                    self.tabs[self.menu_index].update_selected_submenu(
+                        self.submenu_index
+                    )
+
+    def create_scanlines(self):
+        self.scanline_surface.fill((0, 0, 0, 0))
+        line_spacing = 3
+        alpha_value = 35
+
+        for y in range(0, self.height, line_spacing):
+            pygame.draw.line(
+                self.scanline_surface, (0, 0, 0, alpha_value), (0, y), (self.width, y)
+            )
 
     def bootup_sequence(self):
-        self.screen.fill("black")
+        self.screen.fill((0, 6, 0))
 
         boot_text = [
             "******************************* PIP-OS (R) V7 .1.0.8 ********************************",
@@ -87,8 +103,13 @@ class PipBoy:
                 char_text = self.font_18.render(char, True, self.green_text)
                 char_x = 15 + pos
                 char_y = 10 + i * (pygame.font.Font.size(self.font_18, char)[1] + 4)
-                self.screen.blit(char_text, (char_x, char_y))
-                pygame.display.flip()
+                self.screen.blit(
+                    char_text, (char_x, char_y)
+                )  # adds character to the frame for a typewriter effect
+                self.screen.blit(
+                    self.scanline_surface, (0, 0)
+                )  # adds scanlines to the bootup frame
+                pygame.display.flip()  # renders the completed bootup frame
                 pygame.time.delay(40)
                 pos += pygame.font.Font.size(self.font_18, char)[0]
                 self.clock.tick(self.framerate)
@@ -115,7 +136,10 @@ class PipBoy:
                 self.font_36,
                 self.font_24,
             )
-            self.display_update()
+            self.screen.blit(
+                self.scanline_surface, (0, 0)
+            )  # adds scanlines after all frame elements are added to the frame
+            pygame.display.flip()  # renders the completed frame
             self.clock.tick(self.framerate)
 
         pygame.quit()
