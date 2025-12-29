@@ -5,14 +5,29 @@ pygame.init()
 
 
 class SubMenu:
-    def __init__(self, name=None, submenu_index=None):
+    def __init__(self, name=None, submenu_index=0):
         self.name = name
         self.submenu_index = submenu_index
+        self.submenu_list = []
 
     def display_name(self):
         return self.name
 
-    def draw_submenu(self):
+    def submenu_index_range(self):
+        return len(self.submenu_list) - 1
+
+    def increase_submenu_index(self):
+        if not self.submenu_index < self.submenu_index_range():
+            self.submenu_index += 1
+
+    def decrease_submenu_index(self):
+        if not self.submenu_index == 0:
+            self.submenu_index -= 1
+
+    def draw_submenu(self, screen, y_pos, color):
+        raise NotImplementedError
+
+    def input_handler(self):
         raise NotImplementedError
 
 
@@ -21,6 +36,22 @@ class StatusMenu(SubMenu):
         super().__init__(name, submenu_index)
         self.current_time = datetime.datetime.now()
         self.military_time = False
+
+    def update_time_format(self):
+        self.military_time = not self.military_time
+
+    def update_time(self):
+        self.current_time = datetime.datetime.now()
+
+    def formatted_time(self):
+        if self.military_time:
+            formatted_time = self.current_time.strftime("%H:%M:%S")
+        else:
+            formatted_time = self.current_time.strftime("%I:%M:%S%p")
+        return formatted_time
+
+    def formatted_date(self):
+        return self.current_time.strftime("%m/%d/%Y")
 
     def draw_submenu(
         self,
@@ -51,21 +82,9 @@ class StatusMenu(SubMenu):
         centered_date_text_x = x_pos + ((760 - date_text_size[0]) // 2)
         screen.blit(rendered_date_text, (centered_date_text_x, y_pos))
 
-    def update_time_format(self):
-        self.military_time = not self.military_time
-
-    def update_time(self):
-        self.current_time = datetime.datetime.now()
-
-    def formatted_time(self):
-        if self.military_time:
-            formatted_time = self.current_time.strftime("%H:%M:%S")
-        else:
-            formatted_time = self.current_time.strftime("%I:%M:%S%p")
-        return formatted_time
-
-    def formatted_date(self):
-        return self.current_time.strftime("%m/%d/%Y")
+    def input_handler(self):
+        if self.submenu_index == 0:
+            self.update_time_format()
 
 
 class SpecialMenu(SubMenu):

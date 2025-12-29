@@ -60,6 +60,9 @@ class PipBoy:
                         < len(self.tabs[self.menu_index].subtabs()) - 1
                     ):
                         self.submenu_index += 1
+                
+                elif event.key == pygame.K_KP_ENTER:
+                    self.tabs[self.submenu_index].update_selected_submenu()
 
     def bootup_sequence(self):
         self.screen.fill("black")
