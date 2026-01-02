@@ -117,23 +117,51 @@ class PipBoy:
             "NO HOLOTAPE FOUNDLOAD ROM(1): DEITRIX 303",
         ]
 
-        for i, line in enumerate(boot_text):
-            pos = 0
+        background_color = (0, 6, 0)
+        blink_on_ms = 4   # how long the cursor is visible
+        blink_off_ms = 4  # how long it's invisible
+
+        for line_index, line in enumerate(boot_text):
+            pos_x = 0
+
+            # fixed character cell height based on the font
+            _, char_height = self.font_18.size("A")
+
             for char in line:
                 self.event_handler()
-                char_text = self.font_18.render(char, True, self.green_text)
-                char_x = 15 + pos
-                char_y = 10 + i * (pygame.font.Font.size(self.font_18, char)[1] + 4)
-                self.screen.blit(
-                    char_text, (char_x, char_y)
-                )  # adds character to the frame for a typewriter effect
-                self.screen.blit(
-                    self.scanline_surface, (0, 0)
-                )  # adds scanlines to the bootup frame
-                pygame.display.flip()  # renders the completed bootup frame
-                pygame.time.delay(40)
-                pos += pygame.font.Font.size(self.font_18, char)[0]
+
+                # width for this character and its position
+                char_width, _ = self.font_18.size(char)
+                char_x = 15 + pos_x
+                char_y = 10 + line_index * (char_height + 4)
+
+                # rectangle roughly the size of this character cell
+                cursor_rect = pygame.Rect(char_x, char_y, char_width, char_height)
+
+                # --- blink green rectangle at the next character position ---
+
+                # cursor ON (green rectangle outline)
+                pygame.draw.rect(self.screen, self.green_text, cursor_rect)
+                self.screen.blit(self.scanline_surface, (0, 0))
+                pygame.display.flip()
+                pygame.time.delay(blink_on_ms)
+
+                # cursor OFF (paint background back over that cell)
+                pygame.draw.rect(self.screen, background_color, cursor_rect)
+                self.screen.blit(self.scanline_surface, (0, 0))
+                pygame.display.flip()
+                pygame.time.delay(blink_off_ms)
+
+                # --- now actually draw the character at that position ---
+                char_surface = self.font_18.render(char, True, self.green_text)
+                self.screen.blit(char_surface, (char_x, char_y))
+                self.screen.blit(self.scanline_surface, (0, 0))
+                pygame.display.flip()
+                pygame.time.delay(8)
+
+                pos_x += char_width
                 self.clock.tick(self.framerate)
+
 
     # Main loop of the PipBoy
     def run_loop(self):
