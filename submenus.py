@@ -218,7 +218,7 @@ class SpecialMenu(SubMenu):
 class PerksMenu(SubMenu):
     def __init__(self, name="PERKS", submenu_index=0):
         super().__init__(name, submenu_index)
-
+        
 
 class ItemsMenu(SubMenu):
     def __init__(self, name="ITEMS", submenu_index=0):
