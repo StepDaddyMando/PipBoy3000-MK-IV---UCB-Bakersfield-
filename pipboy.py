@@ -24,13 +24,15 @@ class PipBoy:
 
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.start_image = pygame.image.load("PipBoyStart (1).png").convert()
-        self.start_image = pygame.transform.scale(self.start_image, self.screen.get_size())
+        self.start_image = pygame.transform.scale(
+            self.start_image, self.screen.get_size()
+        )
 
         self.font_18 = pygame.font.Font("monofonto.ttf", 18)
         self.font_24 = pygame.font.Font("monofonto.ttf", 24)
         self.font_36 = pygame.font.Font("monofonto.ttf", 36)
         self.green_text = (2, 255, 2)
-        
+
         self.scanline_surface = pygame.Surface(
             (self.width, self.height), pygame.SRCALPHA
         )
@@ -81,7 +83,17 @@ class PipBoy:
 
                 elif event.key == pygame.K_RETURN:
                     self.tabs[self.menu_index].update_selected_submenu(
-                        self.submenu_index
+                        self.submenu_index, "K_RETURN"
+                    )
+
+                elif event.key == pygame.K_q:
+                    self.tabs[self.menu_index].update_selected_submenu(
+                        self.submenu_index, "K_q"
+                    )
+
+                elif event.key == pygame.K_e:
+                    self.tabs[self.menu_index].update_selected_submenu(
+                        self.submenu_index, "K_e"
                     )
 
     def create_scanlines(self):
@@ -100,15 +112,16 @@ class PipBoy:
         flicker = math.sin(self.flicker_phase)
         brightness = 1.0 + (flicker * self.flicker_strength)
         brightness = max(0.97, min(1.03, brightness))
-        value = int(255 * brightness)  
-        value = max(0, min(255, value))# converts brightness to a int, ensuring its from 0-255
+        value = int(255 * brightness)
+        value = max(
+            0, min(255, value)
+        )  # converts brightness to a int, ensuring its from 0-255
         self.flicker_surface.fill((value, value, value, 255))
         self.screen.blit(
             self.flicker_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT
         )
 
     def show_start_screen(self, duration_ms=2000):
-    
         start_time = pygame.time.get_ticks()
 
         while pygame.time.get_ticks() - start_time < duration_ms:
@@ -117,6 +130,7 @@ class PipBoy:
 
             # draw the start image
             self.screen.blit(self.start_image, (0, 0))
+            self.screen.blit(self.scanline_surface, (0, 0))
             pygame.display.flip()
 
             # cap FPS so we’re not spinning too fast
@@ -134,10 +148,8 @@ class PipBoy:
         fps = clip.fps if clip.fps else self.framerate
 
         for frame in clip.iter_frames(fps=fps, dtype="uint8"):
-            
             self.event_handler()
 
-            
             frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
 
             vw, vh = frame_surface.get_size()
@@ -145,12 +157,14 @@ class PipBoy:
             target_w = self.width
             target_h = int(vh * (target_w / vw))
 
-# if it’s still too tall, fit by height instead
+            # if it’s still too tall, fit by height instead
             if target_h > self.height:
                 target_h = self.height
                 target_w = int(vw * (target_h / vh))
 
-            frame_surface = pygame.transform.smoothscale(frame_surface, (target_w, target_h))
+            frame_surface = pygame.transform.smoothscale(
+                frame_surface, (target_w, target_h)
+            )
 
             # center on screen
             x = (self.width - target_w) // 2
@@ -163,7 +177,6 @@ class PipBoy:
         clip.close()
 
     def scrolling_memory_log(self, duration_s=5.0):
-
         lines = []
         for cpu in range(0, 16):  # CPU0 .. CPU15 → 16 * 4 = 64 lines
             lines.append(
@@ -172,12 +185,8 @@ class PipBoy:
             lines.append(
                 f"0x0000AA 0x0000000000000000 CPU{cpu} starting cell relocation"
             )
-            lines.append(
-                f"0x0000AA 0x0000000000000000 CPU{cpu} launch EFI0 0x0000AA"
-            )
-            lines.append(
-                f"0x0000AA 0x0000000000000000 CPU{cpu} starting EFI0 0x0000AA"
-            )
+            lines.append(f"0x0000AA 0x0000000000000000 CPU{cpu} launch EFI0 0x0000AA")
+            lines.append(f"0x0000AA 0x0000000000000000 CPU{cpu} starting EFI0 0x0000AA")
 
         # Pre-render all lines once
         line_surfaces = [
@@ -235,7 +244,6 @@ class PipBoy:
             pygame.display.flip()
             self.clock.tick(self.framerate)
 
-
     def bootup_sequence(self):
         self.screen.fill((0, 6, 0))
 
@@ -253,7 +261,7 @@ class PipBoy:
         ]
 
         background_color = (0, 6, 0)
-        blink_on_ms = 4   # how long the cursor is visible
+        blink_on_ms = 4  # how long the cursor is visible
         blink_off_ms = 4  # how long it's invisible
 
         # ---TYPE THE TEXT ---
@@ -294,10 +302,10 @@ class PipBoy:
                 self.clock.tick(self.framerate)
 
         # --- SCROLL ENTIRE SCREEN UP ---
-        
+
         boot_surface = self.screen.copy()
 
-        duration_s = 2.0          # how long the scroll takes
+        duration_s = 2.0  # how long the scroll takes
         start_time = pygame.time.get_ticks()
         h = self.height
 
@@ -311,25 +319,20 @@ class PipBoy:
 
             self.event_handler()
 
-            
             y_offset = int(-t * h)
 
-            
             self.screen.fill(background_color)
 
-            
             self.screen.blit(boot_surface, (0, y_offset))
 
-            
             self.screen.blit(self.scanline_surface, (0, 0))
             dt = self.clock.get_time() / 1000.0
             self.apply_frame_flicker(dt)
 
             pygame.display.flip()
             self.clock.tick(self.framerate)
-    def animate_initial_menu_entry(self, total_duration=1.0):
-       
 
+    def animate_initial_menu_entry(self, total_duration=1.0):
         # Render current menu (STAT / STATUS) once to an off-screen surface
         menu_surface = pygame.Surface((self.width, self.height)).convert()
         self.tabs[self.menu_index].draw_menu(
@@ -394,8 +397,6 @@ class PipBoy:
         # final frame exactly in place
         draw_with_offset(0)
 
-    
-
     # Main loop of the PipBoy
     def run_loop(self):
         running = True
@@ -405,10 +406,9 @@ class PipBoy:
             self.show_start_screen()
             self.scrolling_memory_log()
             self.bootup_sequence()
-            self.play_intro_video("Pip.Start 2.mov") 
+            self.play_intro_video("Pip.Start 2.mov")
             self.animate_initial_menu_entry()
             bootup_done = True
-            
 
         while running:
             self.event_handler()
@@ -432,7 +432,3 @@ class PipBoy:
             self.clock.tick(self.framerate)
 
         pygame.quit()
-
-    # Updates the entire screen with the current state of the PipBoy
-    def display_update(self):
-        pygame.display.flip()

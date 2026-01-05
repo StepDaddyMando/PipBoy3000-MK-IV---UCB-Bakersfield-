@@ -27,7 +27,7 @@ class SubMenu:
     def draw_submenu(self, screen, y_pos, color):
         raise NotImplementedError
 
-    def input_handler(self):
+    def input_handler(self, key_pressed):
         raise NotImplementedError
 
 
@@ -82,8 +82,8 @@ class StatusMenu(SubMenu):
         centered_date_text_x = x_pos + ((760 - date_text_size[0]) // 2)
         screen.blit(rendered_date_text, (centered_date_text_x, y_pos))
 
-    def input_handler(self):
-        if self.submenu_index == 0:
+    def input_handler(self, key_pressed):
+        if self.submenu_index == 0 and key_pressed == "K_RETURN":
             self.update_time_format()
 
 
@@ -130,7 +130,7 @@ class SpecialMenu(SubMenu):
             ),
         ]
 
-        self.selected_index = 0
+        self.submenu_index = 0
 
     def wrap_text(self, font, text, max_width):
         words = text.split(" ")
@@ -172,7 +172,7 @@ class SpecialMenu(SubMenu):
         for i, (name, value, desc) in enumerate(self.stats):
             y = top + i * line_spacing
 
-            if i == self.selected_index:
+            if i == self.submenu_index:
                 pointer_surface = stat_font.render(">", True, color)
                 pointer_rect = pointer_surface.get_rect()
                 pointer_rect.midright = (
@@ -188,7 +188,7 @@ class SpecialMenu(SubMenu):
             screen.blit(value_surface, (value_column_x, y))
 
         # description for selected stat, bottom-right
-        _, value, desc = self.stats[self.selected_index]
+        _, value, desc = self.stats[self.submenu_index]
 
         desc_x = left_margin + 260
         bottom_start_y = top + line_spacing * len(self.stats) + 20
@@ -203,22 +203,23 @@ class SpecialMenu(SubMenu):
             line_y = bottom_start_y + i * line_spacing
             screen.blit(text_surface, (desc_x, line_y))
 
-
-
-    def input_handler(self):
+    def input_handler(self, key_pressed):
         """
         Called when the user presses ENTER on the SPECIAL submenu.
 
         For now, we'll simply cycle through S -> P -> E -> C -> I -> A -> L.
         """
-        self.selected_index = (self.selected_index + 1) % len(self.stats)
+        if key_pressed == "K_q":
+            self.submenu_index = (self.submenu_index - 1) % len(self.stats)
 
+        if key_pressed == "K_e":
+            self.submenu_index = (self.submenu_index + 1) % len(self.stats)
 
 
 class PerksMenu(SubMenu):
     def __init__(self, name="PERKS", submenu_index=0):
         super().__init__(name, submenu_index)
-        
+
 
 class ItemsMenu(SubMenu):
     def __init__(self, name="ITEMS", submenu_index=0):

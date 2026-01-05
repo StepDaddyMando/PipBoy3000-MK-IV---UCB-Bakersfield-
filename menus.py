@@ -18,9 +18,9 @@ class MenuTab:
 
     def display_subtabs(self, index):
         return self.subtabs()[index]
-    
-    def update_selected_submenu(self, submenu_index):
-        self.tabs_list[submenu_index].input_handler()
+
+    def update_selected_submenu(self, submenu_index, key_pressed):
+        self.tabs_list[submenu_index].input_handler(key_pressed)
 
     def draw_menu(
         self, screen, tabs, menu_index, submenu_index, color, menu_font, submenu_font
