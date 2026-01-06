@@ -33,6 +33,34 @@ class PipBoy:
         self.font_36 = pygame.font.Font("monofonto.ttf", 36)
         self.green_text = (2, 255, 2)
 
+        self.typing_sound_1 = pygame.mixer.Sound(
+            file="resources/sounds/ui_hacking_charsingle_01.wav"
+        )
+        self.typing_sound_2 = pygame.mixer.Sound(
+            file="resources/sounds/ui_hacking_charsingle_02.wav"
+        )
+        self.typing_sound_3 = pygame.mixer.Sound(
+            file="resources/sounds/ui_hacking_charsingle_03.wav"
+        )
+        self.typing_sound_4 = pygame.mixer.Sound(
+            file="resources/sounds/ui_hacking_charsingle_04.wav"
+        )
+        self.typing_sound_5 = pygame.mixer.Sound(
+            file="resources/sounds/ui_hacking_charsingle_05.wav"
+        )
+        self.typing_sound_6 = pygame.mixer.Sound(
+            file="resources/sounds/ui_hacking_charsingle_06.wav"
+        )
+        self.menu_scroll = pygame.mixer.Sound(
+            file="resources/sounds/ui_pipboy_tab.wav"
+        )
+        self.cursor_scroll = pygame.mixer.Sound(
+            file="resources/sounds/ui_menu_focus.wav"
+        )
+        self.menu_select = pygame.mixer.Sound(
+            file="resources/sounds/ui_pipboy_select.wav"
+            )
+
         self.scanline_surface = pygame.Surface(
             (self.width, self.height), pygame.SRCALPHA
         )
@@ -63,16 +91,19 @@ class PipBoy:
                     if self.menu_index > 0:
                         self.menu_index -= 1
                         self.submenu_index = 0
+                    self.menu_scroll.play()
 
                 elif event.key == pygame.K_RIGHT:
                     if self.menu_index < len(self.tabs) - 1:
                         self.menu_index += 1
                         self.submenu_index = 0
+                    self.menu_scroll.play()
 
                 # Up and Down arrow keys are used to navigate the submenus within the current tab
                 elif event.key == pygame.K_UP:
                     if self.submenu_index > 0:
                         self.submenu_index -= 1
+                    self.menu_scroll.play()
 
                 elif event.key == pygame.K_DOWN:
                     if (
@@ -80,21 +111,25 @@ class PipBoy:
                         < len(self.tabs[self.menu_index].subtabs()) - 1
                     ):
                         self.submenu_index += 1
+                    self.menu_scroll.play()
 
                 elif event.key == pygame.K_RETURN:
                     self.tabs[self.menu_index].update_selected_submenu(
                         self.submenu_index, "K_RETURN"
                     )
+                    self.menu_select.play()
 
                 elif event.key == pygame.K_q:
                     self.tabs[self.menu_index].update_selected_submenu(
                         self.submenu_index, "K_q"
                     )
+                    self.cursor_scroll.play()
 
                 elif event.key == pygame.K_e:
                     self.tabs[self.menu_index].update_selected_submenu(
                         self.submenu_index, "K_e"
                     )
+                    self.cursor_scroll.play()
 
     def create_scanlines(self):
         self.scanline_surface.fill((0, 0, 0, 0))
@@ -244,6 +279,18 @@ class PipBoy:
             pygame.display.flip()
             self.clock.tick(self.framerate)
 
+    def typing_sound(self):
+        sounds = [
+            self.typing_sound_1,
+            self.typing_sound_2,
+            self.typing_sound_3,
+            self.typing_sound_4,
+            self.typing_sound_5,
+            self.typing_sound_6,
+        ]
+        selected_sound = random.choice(sounds)
+        selected_sound.play()
+
     def bootup_sequence(self):
         self.screen.fill((0, 6, 0))
 
@@ -296,7 +343,8 @@ class PipBoy:
                 self.screen.blit(char_surface, (char_x, char_y))
                 self.screen.blit(self.scanline_surface, (0, 0))
                 pygame.display.flip()
-                pygame.time.delay(8)
+                self.typing_sound()
+                pygame.time.delay(20)
 
                 pos_x += char_width
                 self.clock.tick(self.framerate)
